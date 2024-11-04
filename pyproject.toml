@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "project-result"
+version = "0.1.0"
+description = ""
+authors = ["iogannR <rromadiniv98@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.115.4"}
+dishka = "^1.4.0"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+alembic = "^1.13.3"
+asyncpg = "^0.30.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
