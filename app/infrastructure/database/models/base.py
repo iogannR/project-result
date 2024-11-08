@@ -11,7 +11,7 @@ from app.infrastructure.config import settings
 class Base(DeclarativeBase):
     __abstract__ = True
     
-    metadata = MetaData(naming_convention=settings.db.naming_convention)
+    metadata = MetaData(naming_convention=settings.db.NAMING_CONVENTION)
     
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     

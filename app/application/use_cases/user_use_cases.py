@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import HTTPException, status
 
+from app.domain.adapters.password_hash_adapter import BasePasswordHashAdapter
 from app.domain.entities.user import UserEntity
 from app.domain.repositories.user_repository import UserRepository
 from app.application.use_cases.interactor import Interactor
@@ -9,8 +10,13 @@ from app.application.dto.user_dto import CreateUserRequest, UserResponse
 
 
 class CreateUserUseCase(Interactor[CreateUserRequest, UserResponse]):
-    def __init__(self, user_repository: UserRepository) -> None:
+    def __init__(
+        self,
+        user_repository: UserRepository, 
+        password_hash_adapter: BasePasswordHashAdapter,
+    ) -> None:
         self._user_repository = user_repository
+        self._password_hash_adapter = password_hash_adapter
         
     async def __call__(self, request: CreateUserRequest) -> UserResponse:
         existing: UserEntity | None = await self._user_repository.get_by_email(request.email)
@@ -19,6 +25,7 @@ class CreateUserUseCase(Interactor[CreateUserRequest, UserResponse]):
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Пользователь с таким email уже существует!",
             )
+        request.password = self._password_hash_adapter.hash_password(request.password)
         user_entity = UserEntity(**request.model_dump())
         await self._user_repository.create(user_entity)
         return UserResponse.from_entity(user_entity)

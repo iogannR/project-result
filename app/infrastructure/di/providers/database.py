@@ -17,9 +17,9 @@ class SQLAlchemyProvider(Provider):
     def provide_egnine(self) -> AsyncEngine: 
         engine: AsyncEngine = create_async_engine(
             url=self.url,
-            echo=settings.db.echo,
-            pool_size=settings.db.pool_size,
-            max_overflow=settings.db.max_overflow,
+            echo=settings.db.ECHO,
+            pool_size=settings.db.POOL_SIZE,
+            max_overflow=settings.db.MAX_OVERFLOW,
         )
         return engine
 

@@ -30,3 +30,9 @@ class CreateUserRequest(BaseModel):
     username: str
     email: EmailStr
     password: str
+    
+    
+class LoginUserRequest(BaseModel):
+    username: str
+    email: EmailStr
+    password: str

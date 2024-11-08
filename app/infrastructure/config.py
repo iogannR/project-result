@@ -7,24 +7,32 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class RunConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 8000
+    HOST: str = "localhost"
+    PORT: int = 8000
 
 
 class JWTAuthConfig(BaseModel):
     private_key_path: Path = BASE_DIR / "infrastructure" / "certs" / "jwt-private.pem"
-    public_key_path: Path = BASE_DIR / "infrastructre" / "certs" / "jwt-public.pem"
-    algorithm: str = "RS256"
-    access_token_expire_minutes: int = 3
+    public_key_path: Path = BASE_DIR / "infrastructure" / "certs" / "jwt-public.pem"
+    ALGORITHM: str = "RS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 3
 
+    @property
+    def PRIVATE_KEY(self) -> str:
+        return self.private_key_path.read_text()
+    
+    @property
+    def PUBLIC_KEY(self) -> str:
+        return self.public_key_path.read_text()
+    
 
 class DatabaseConfig(BaseModel):
-    url: PostgresDsn
-    echo: bool = False
-    pool_size: int = 5
-    max_overflow: int = 10
+    URL: PostgresDsn
+    ECHO: bool
+    POOL_SIZE: int
+    MAX_OVERFLOW: int
     
-    naming_convention: dict[str, str] = {
+    NAMING_CONVENTION: dict[str, str] = {
         "ix": "ix_%(column_0_label)s",
         "uq": "uq_%(table_name)s_%(column_0_N_name)s",
         "ck": "ck_%(table_name)s_`%(constraint_name)s`",
@@ -40,9 +48,9 @@ class Settings(BaseSettings):
     
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
-        case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="MAIN__",
+        extra="allow",
     )
     
 
