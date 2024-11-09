@@ -7,6 +7,7 @@ from app.application.use_cases.user_use_cases import (
     GetUserByEmailUseCase, 
     GetUserByIdUseCase,
 )
+from app.domain.adapters.password_hash_adapter import BasePasswordHashAdapter
 from app.domain.repositories.user_repository import UserRepository
 
 
@@ -16,8 +17,12 @@ class UserUseCaseProvider(Provider):
     async def provide_create(
         self,
         user_repository: UserRepository,
+        password_hash_adapter: BasePasswordHashAdapter,
     ) -> CreateUserUseCase:
-        return CreateUserUseCase(user_repository)
+        return CreateUserUseCase(
+            user_repository,
+            password_hash_adapter,
+        )
     
     @provide(scope=Scope.REQUEST)
     async def provide_get_all(

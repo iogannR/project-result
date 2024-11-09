@@ -1,33 +1,35 @@
 from fastapi import HTTPException, status
 
-from app.application.dto.user_dto import LoginUserRequest, UserResponse
+from app.application.dto.user_dto import LoginUserRequest
 from app.application.use_cases.interactor import Interactor
+from app.domain.adapters.jwt_token_adapter import BaseJWTTokenAdapter
 from app.domain.adapters.password_hash_adapter import BasePasswordHashAdapter
 from app.domain.repositories.user_repository import UserRepository
 
 
-class LoginUserUseCase(Interactor[LoginUserRequest, UserResponse]):
+# literals
+SUB: str = "sub"
+
+class LoginUserUseCase(Interactor[LoginUserRequest, str]):
     def __init__(
         self, 
         user_repository: UserRepository,
-        hash_password_adapter: BasePasswordHashAdapter,
+        password_hash_adapter: BasePasswordHashAdapter,
+        jwt_token_adapter: BaseJWTTokenAdapter,
     ) -> None:
         self._user_repository = user_repository
-        self._hash_password_adapter = hash_password_adapter
+        self._password_hash_adapter = password_hash_adapter
+        self._jwt_token_adapter = jwt_token_adapter
         
-    async def __call__(self, request: LoginUserRequest) -> UserResponse:
+    async def __call__(self, request: LoginUserRequest) -> str:
         user = await self._user_repository.get_by_email(request.email)
-        if user:
+        if not user or not self._password_hash_adapter.verify_password(
+            request.password,
+            user.password,
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Ошибка авторизации",
-            )
-        check_password = self._hash_password_adapter.verify_password(
-            request.password, user.password,
-        )
-        if not check_password:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Ошибка авторизации",
-            )
-        return user
+                detail="Ошибка авторизации: неверный логин или пароль!")
+        
+        access_token = self._jwt_token_adapter.encode_access_token({SUB: str(user.id)})
+        return access_token

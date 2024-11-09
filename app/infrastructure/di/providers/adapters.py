@@ -16,15 +16,8 @@ class AdaptersProvider(Provider):
     ) -> BasePasswordHashAdapter:
         return PasswordHashAdapter()
     
-    @provide(scope=Scope.APP)
-    def provide_timedelta(
-        self,
-    ) -> timedelta | None:
-        return timedelta
-    
     @provide(scope=Scope.REQUEST)
     def provide_jwt_token_adapter(
         self,
-        timedelta: timedelta | None,
     ) -> BaseJWTTokenAdapter:
-        return JoseJWTTokenAdapter(timedelta)
+        return JoseJWTTokenAdapter()

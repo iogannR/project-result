@@ -15,22 +15,13 @@ JTI: str = "jti"
 
 class JoseJWTTokenAdapter(BaseJWTTokenAdapter):
     """Adapter for working with JWT-tokens"""
-    
-    def __init__(
-        self,
-        expire_timedelta: timedelta | None = None,
-    ) -> None:
-        self.expire_timedelta = expire_timedelta
         
     def encode_access_token(self, payload: dict[str, Any]) -> str:
         data = payload.copy()
         now = datetime.now(UTC)
-        if self.expire_timedelta:
-            expire = now + self.expire_timedelta
-        else:
-            expire = now + timedelta(
-                minutes=settings.jwt_auth.ACCESS_TOKEN_EXPIRE_MINUTESб
-            )
+        expire = now + timedelta(
+            minutes=settings.jwt_auth.ACCESS_TOKEN_EXPIRE_MINUTES,
+        )
         data.update({EXP: expire, IAT: now, JTI: str(uuid.uuid4())})
         access_token = jwt.encode(
             data, settings.jwt_auth.PRIVATE_KEY, algorithm=settings.jwt_auth.ALGORITHM,

@@ -33,6 +33,5 @@ class CreateUserRequest(BaseModel):
     
     
 class LoginUserRequest(BaseModel):
-    username: str
     email: EmailStr
     password: str
