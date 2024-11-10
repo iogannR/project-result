@@ -69,7 +69,7 @@ class GetUserByEmailUseCase(Interactor[str, UserResponse]):
                 detail="Пользователь с таким email не найден!",
             )
         return UserResponse.from_entity(user_entity)
-    
+
 
 class DeleteUserByIdUseCase(Interactor[uuid.UUID, None]):
     def __init__(self, user_repository: UserRepository) -> None:

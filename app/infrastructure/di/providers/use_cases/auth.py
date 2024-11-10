@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
 
-from app.application.use_cases.auth_use_cases import LoginUserUseCase
+from app.application.use_cases.auth_use_cases import CreateAccessTokenUseCase, LoginUserUseCase
 from app.domain.adapters.jwt_token_adapter import BaseJWTTokenAdapter
 from app.domain.adapters.password_hash_adapter import BasePasswordHashAdapter
 from app.domain.repositories.user_repository import UserRepository
@@ -21,3 +21,11 @@ class UserAuthUseCaseProvider(Provider):
             jwt_token_adapter=jwt_token_adapter,
         )
         
+    @provide(scope=Scope.REQUEST)
+    async def provide_create_access_token(
+        self,
+        jwt_token_adapter: BaseJWTTokenAdapter,
+    ) -> CreateAccessTokenUseCase:
+        return CreateAccessTokenUseCase(
+            jwt_token_adapter=jwt_token_adapter,
+        )
